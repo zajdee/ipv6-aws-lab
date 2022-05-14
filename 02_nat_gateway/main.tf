@@ -16,7 +16,7 @@ data "terraform_remote_state" "vpc" {
 resource "aws_eip" "nat" {
   count = length(data.terraform_remote_state.vpc.outputs.public_subnet_cidr_blocks)
 
-  vpc = true
+  vpc  = true
   tags = {
     Name        = "v6LabNATGatewayIP"
     Environment = "v6Lab"
@@ -29,7 +29,7 @@ resource "aws_nat_gateway" "nat_gateway" {
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = data.terraform_remote_state.vpc.outputs.public_subnets[count.index].id
-  tags = {
+  tags          = {
     Name        = "v6LabNATGateway"
     Environment = "v6Lab"
   }
@@ -47,11 +47,22 @@ resource "aws_route" "private_default_gw" {
 
 # It might look weird, but yes, NAT gateway accepts this IPv6 route
 # It acts as an inter-protocol translator, translating from
-# IPv6 to IPv4
+# IPv6 to IPv4. We need to add routes to both IPv6-only subnet routing tables.
 resource "aws_route" "private_nat64_default_gw" {
   count = length(data.terraform_remote_state.vpc.outputs.private_subnet_cidr_blocks)
 
   route_table_id              = data.terraform_remote_state.vpc.outputs.private_route_tables[count.index].id
+  destination_ipv6_cidr_block = "64:ff9b::/96"
+  nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
+}
+
+resource "aws_route" "public_nat64_default_gw" {
+  # If we had more than 1 public IPv6-only subnets...
+  # count = length(data.terraform_remote_state.vpc.outputs.public_subnet_cidr_blocks)
+  # route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables[count.index].id
+  # nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
+  count                       = 1
+  route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables.id
   destination_ipv6_cidr_block = "64:ff9b::/96"
   nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
 }
