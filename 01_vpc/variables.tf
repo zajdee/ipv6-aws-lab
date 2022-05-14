@@ -1,5 +1,5 @@
 variable "region" {
-  default     = "eu-central-1"
+  default     = "eu-west-2"
   type        = string
   description = "Region of the VPC"
 }
@@ -53,7 +53,7 @@ variable "private6only_subnet_cidr6_indexes" {
 }
 
 variable "availability_zones" {
-  default     = ["eu-central-1a"]
+  default     = ["eu-west-2a"]
   type        = list
   description = "List of availability zones"
 }
