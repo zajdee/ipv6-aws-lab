@@ -11,13 +11,13 @@ variable "aws_profile_name" {
 }
 
 variable "cidr_block" {
-  default     = "100.192.0.0/16"
+  default     = "100.96.0.0/16"
   type        = string
   description = "CIDR block for the VPC"
 }
 
 variable "public_subnet_cidr_blocks" {
-  default     = ["100.192.0.0/24"]
+  default     = ["100.96.0.0/20"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
@@ -35,7 +35,7 @@ variable "public6only_subnet_cidr6_indexes" {
 }
 
 variable "private_subnet_cidr_blocks" {
-  default     = ["100.192.8.0/24"]
+  default     = ["100.96.16.0/20"]
   type        = list
   description = "List of private subnet CIDR blocks"
 }
