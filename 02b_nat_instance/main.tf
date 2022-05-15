@@ -27,6 +27,7 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
+
 resource "aws_security_group" "nat64_sg" {
   description = "Allow SSH inbound traffic"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
@@ -85,7 +86,7 @@ resource "aws_network_interface" "eni_v6LabNAT64Instance" {
   subnet_id         = data.terraform_remote_state.vpc.outputs.public_subnets[0].id
   security_groups   = [aws_security_group.nat64_sg.id]
   # ipv6_prefix_count = 1
-  # $ echo "ibase=16; C0011001"|bc
+  # $ echo "ibase=16; C0011001" | bc
   # 3221295105
   # as in: COOL JOOL (the NAT64 software)
   ipv6_addresses    = [cidrhost(data.terraform_remote_state.vpc.outputs.public_subnets[0].ipv6_cidr_block, 3221295105)]

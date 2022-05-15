@@ -27,7 +27,8 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
-resource "aws_security_group" "webserver_sg" {
+
+resource "aws_security_group" "v6LabSG" {
   description = "Allow SSH inbound traffic"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
@@ -90,28 +91,30 @@ resource "aws_security_group" "webserver_sg" {
 
   }
 }
-resource "aws_network_interface" "eni_v6LabEC2DualStack" {
+
+# EC2 in a dual-stack public subnet
+resource "aws_network_interface" "eni_v6LabPublicEC2DualStack" {
   subnet_id       = data.terraform_remote_state.vpc.outputs.public_subnets[0].id
-  security_groups = [aws_security_group.webserver_sg.id]
+  security_groups = [aws_security_group.v6LabSG.id]
   # ipv6_prefix_count = 1
-  # $ echo "ibase=16; DEADBEEF"|bc
+  # $ echo "ibase=16; DEADBEEF" | bc
   # 3735928559
   ipv6_addresses  = [cidrhost(data.terraform_remote_state.vpc.outputs.public_subnets[0].ipv6_cidr_block, 3735928559)]
 
   tags = {
-    Name        = "eni_v6LabEC2DualStack"
+    Name        = "eni_v6LabPublicEC2DualStack"
     Environment = "v6Lab"
   }
 }
 
-resource "aws_instance" "v6LabEC2DualStack" {
+resource "aws_instance" "v6LabPublicEC2DualStack" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
   key_name      = var.ssh_key_name
 
 
   network_interface {
-    network_interface_id = aws_network_interface.eni_v6LabEC2DualStack.id
+    network_interface_id = aws_network_interface.eni_v6LabPublicEC2DualStack.id
     device_index         = 0
   }
 
@@ -120,19 +123,56 @@ resource "aws_instance" "v6LabEC2DualStack" {
   }
 
   tags = {
-    Name        = "v6LabEC2DualStack"
+    Name        = "v6LabPublicEC2DualStack"
     Environment = "v6Lab"
   }
 }
 
-# EC2 instance in a public subnet
+# EC2 in a dual-stack private subnet
+resource "aws_network_interface" "eni_v6LabPrivateEC2DualStack" {
+  subnet_id       = data.terraform_remote_state.vpc.outputs.private_subnets[0].id
+  security_groups = [aws_security_group.v6LabSG.id]
+  # $ echo "ibase=16; C01DCAFE" | bc
+  # 3223177982
+  ipv6_addresses  = [cidrhost(data.terraform_remote_state.vpc.outputs.private_subnets[0].ipv6_cidr_block, 3223177982)]
+
+  tags = {
+    Name        = "eni_v6LabPublicEC2DualStack"
+    Environment = "v6Lab"
+  }
+}
+
+resource "aws_instance" "v6LabPrivateEC2DualStack" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro"
+  key_name      = var.ssh_key_name
+
+
+  network_interface {
+    network_interface_id = aws_network_interface.eni_v6LabPrivateEC2DualStack.id
+    device_index         = 0
+  }
+
+  credit_specification {
+    cpu_credits = "standard"
+  }
+
+  tags = {
+    Name        = "v6LabPrivateEC2DualStack"
+    Environment = "v6Lab"
+  }
+}
+
+# EC2 instance in an IPv6-only public subnet
 resource "aws_network_interface" "eni_v6LabPublicEC2IPv6Only" {
   subnet_id       = data.terraform_remote_state.vpc.outputs.public6only_subnets[0].id
-  security_groups = [aws_security_group.webserver_sg.id]
+  security_groups = [aws_security_group.v6LabSG.id]
   # ipv6_prefix_count = 1
-  # $ echo "ibase=16; FACEB00C"|bc
+  # $ echo "ibase=16; FACEB00C" | bc
   # 4207849484
-  ipv6_addresses  = [cidrhost(data.terraform_remote_state.vpc.outputs.public6only_subnets[0].ipv6_cidr_block, 4207849484)]
+  ipv6_addresses  = [
+    cidrhost(data.terraform_remote_state.vpc.outputs.public6only_subnets[0].ipv6_cidr_block, 4207849484)
+  ]
 
   tags = {
     Name        = "eni_v6LabPublicEC2IPv6Only"
@@ -161,14 +201,15 @@ resource "aws_instance" "v6LabPublicEC2IPv6Only" {
   }
 }
 
-# EC2 instance in a private subnet
+# EC2 instance in an IPv6-only private subnet
 resource "aws_network_interface" "eni_v6LabPrivateEC2IPv6Only" {
   subnet_id       = data.terraform_remote_state.vpc.outputs.private6only_subnets[0].id
-  security_groups = [aws_security_group.webserver_sg.id]
-  # ipv6_prefix_count = 1
-  # $ echo "ibase=16; BADCAFE"|bc
+  security_groups = [aws_security_group.v6LabSG.id]
+  # $ echo "ibase=16; BADCAFE" | bc
   # 195939070
-  ipv6_addresses  = [cidrhost(data.terraform_remote_state.vpc.outputs.private6only_subnets[0].ipv6_cidr_block, 195939070)]
+  ipv6_addresses  = [
+    cidrhost(data.terraform_remote_state.vpc.outputs.private6only_subnets[0].ipv6_cidr_block, 195939070)
+  ]
 
   tags = {
     Name        = "eni_v6LabPrivateEC2IPv6Only"
