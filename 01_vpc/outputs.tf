@@ -41,3 +41,11 @@ output "private6only_subnet_cidr6_indexes" {
 output "vpc_id" {
   value = aws_vpc.default_vpc.id
 }
+
+output "ipv4_cidr_blocks" {
+  value = [aws_vpc.default_vpc.cidr_block]
+}
+
+output "ipv6_cidr_blocks" {
+  value = [aws_vpc.default_vpc.ipv6_cidr_block]
+}

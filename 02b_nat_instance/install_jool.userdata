@@ -1,0 +1,64 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+cloud_final_modules:
+- [scripts-user, always]
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
+#!/bin/bash
+apt-get update
+apt-get install -y jool-dkms jool-tools
+DUALSTACKIFACE=`ip route show default | egrep -o 'dev [^ ]* ' | awk '{print $2}'`
+modprobe jool
+
+# add namespace and devices to link the two namespaces
+ip netns add joolns
+ip link add name to_jool type veth peer name from_jool
+ip link set dev from_jool netns joolns
+
+# global namespace
+ip link set to_jool up
+ip -6 addr flush dev to_jool scope link
+ip addr add fe80::1/64 scope link dev to_jool
+ip addr add 192.0.2.8/24 dev to_jool
+
+# joolns namespace
+ip netns exec joolns ip link set from_jool up
+ip netns exec joolns ip -6 addr flush dev from_jool scope link
+ip netns exec joolns ip addr add fe80::2/64 scope link dev from_jool
+ip netns exec joolns ip addr add 192.0.2.1/24 dev from_jool
+ip netns exec joolns ip route add default via 192.0.2.8
+ip netns exec joolns ip -6 route add default via fe80::1 dev from_jool
+ip netns exec joolns sysctl -w net.ipv4.conf.all.forwarding=1
+ip netns exec joolns sysctl -w net.ipv6.conf.all.forwarding=1
+
+# create jool instance in the joolns namespace
+ip netns exec joolns jool instance add --netfilter --pool6 64:ff9b::/96
+
+# add route to the main namespace
+ip route add 64:ff9b::/96 via fe80::2 dev to_jool
+
+# display jool status
+ip netns exec joolns jool global display
+
+# This configures masquerade for any traffic, incl. IPv4-only
+iptables -t nat -A POSTROUTING -o ${DUALSTACKIFACE} -j MASQUERADE
+
+# enable IP forwarding
+sysctl -w net.ipv4.conf.all.forwarding=1
+sysctl -w net.ipv6.conf.all.forwarding=1
+
+exit 0
+--//--
