@@ -22,14 +22,16 @@ variable "public_subnet_cidr_blocks" {
   description = "List of public subnet CIDR blocks"
 }
 
+# Terraform doesn't understand hexadecimal numbers; however IPv6 network planning
+# in decimal is tough, so let's use parseint() and parse those hexadecimal strings
 variable "public_subnet_cidr6_indexes" {
-  default     = [0, 1, 2]
+  default     = ["00", "01", "02"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "public6only_subnet_cidr6_indexes" {
-  default     = [16, 17, 18]
+  default     = ["10", "11", "12"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
@@ -41,13 +43,13 @@ variable "private_subnet_cidr_blocks" {
 }
 
 variable "private_subnet_cidr6_indexes" {
-  default     = [32, 33, 34]
+  default     = ["20", "21", "22"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "private6only_subnet_cidr6_indexes" {
-  default     = [48, 49, 50]
+  default     = ["30", "31", "32"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }

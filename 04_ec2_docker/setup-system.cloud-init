@@ -1,0 +1,48 @@
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+cloud_final_modules:
+- [scripts-user, always]
+
+--//
+Content-Type: text/x-shellscript; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="userdata.txt"
+
+#!/bin/bash
+
+default_network_card=`ip route show default | awk '{print $5}'`
+
+# configure static IPv6 address
+cat <<EOF > /etc/netplan/60-static-ipv6.yaml
+network:
+    version: 2
+    ethernets:
+        $${default_network_card}:
+            accept-ra: yes
+            addresses:
+            -  ${system_ipv6_address}/128
+EOF
+netplan apply
+
+# configure IPv6 in docker
+apt-get update
+apt-get install -y docker.io
+cat <<EOF > /etc/docker/daemon.json
+{
+  "ipv6": true,
+  "fixed-cidr-v6": "${docker_prefix}"
+}
+EOF
+systemctl restart docker.service
+
+exit 0
+--//--

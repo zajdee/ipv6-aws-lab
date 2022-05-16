@@ -3,6 +3,8 @@ provider "aws" {
   profile = "${var.aws_profile_name}"
 }
 
+data "aws_region" "current" {}
+
 # Create our lab VPC
 resource "aws_vpc" "default_vpc" {
   cidr_block                       = var.cidr_block
@@ -110,7 +112,8 @@ resource "aws_subnet" "private_subnet" {
   ipv6_cidr_block = cidrsubnet(
     aws_vpc.default_vpc.ipv6_cidr_block,
     8,
-    var.private_subnet_cidr6_indexes[count.index])
+    parseint(var.private_subnet_cidr6_indexes[count.index], 16)
+  )
 
   assign_ipv6_address_on_creation = true
 
@@ -135,7 +138,8 @@ resource "aws_subnet" "private6only_subnet" {
   ipv6_cidr_block = cidrsubnet(
     aws_vpc.default_vpc.ipv6_cidr_block,
     8,
-    var.private6only_subnet_cidr6_indexes[count.index])
+    parseint(var.private6only_subnet_cidr6_indexes[count.index], 16)
+  )
 
   enable_resource_name_dns_aaaa_record_on_launch = true
   enable_resource_name_dns_a_record_on_launch    = false
@@ -165,7 +169,8 @@ resource "aws_subnet" "public_subnet" {
   ipv6_cidr_block = cidrsubnet(
     aws_vpc.default_vpc.ipv6_cidr_block,
     8,
-    var.public_subnet_cidr6_indexes[count.index])
+    parseint(var.public_subnet_cidr6_indexes[count.index], 16)
+  )
 
   tags = {
     Name        = format("v6LabPublicDualStackSubnet-%s%s", var.region, var.availability_zones[count.index])
@@ -190,7 +195,8 @@ resource "aws_subnet" "public6only_subnet" {
   ipv6_cidr_block = cidrsubnet(
     aws_vpc.default_vpc.ipv6_cidr_block,
     8,
-    var.public6only_subnet_cidr6_indexes[count.index])
+    parseint(var.public6only_subnet_cidr6_indexes[count.index], 16)
+  )
 
   enable_resource_name_dns_aaaa_record_on_launch = true
   enable_resource_name_dns_a_record_on_launch    = false
@@ -231,6 +237,28 @@ resource "aws_route_table_association" "public6only_rta" {
 
   subnet_id      = aws_subnet.public6only_subnet[count.index].id
   route_table_id = aws_route_table.public_route_table[count.index].id
+}
+
+# Finally, deploy an S3 Gateway endpoint to all routing tables
+# Gateway endpoints are free of charge and the traffic routed via these
+# is also free of charge
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = aws_vpc.default_vpc.id
+  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+}
+
+resource "aws_vpc_endpoint_route_table_association" "private_rta_s3" {
+  count = length(var.private_subnet_cidr_blocks)
+
+  route_table_id  = aws_route_table.private_route_table[count.index].id
+  vpc_endpoint_id = aws_vpc_endpoint.s3.id
+}
+
+resource "aws_vpc_endpoint_route_table_association" "public_rta_s3" {
+  count = length(var.public_subnet_cidr_blocks)
+
+  route_table_id  = aws_route_table.public_route_table[count.index].id
+  vpc_endpoint_id = aws_vpc_endpoint.s3.id
 }
 
 # NAT gateway is created separately
