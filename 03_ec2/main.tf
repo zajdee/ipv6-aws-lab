@@ -29,7 +29,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "v6LabSG" {
-  description = "Allow SSH inbound traffic"
+  description = "Allow SSH/HTTP(S)/ICMP inbound traffic"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
   ingress {

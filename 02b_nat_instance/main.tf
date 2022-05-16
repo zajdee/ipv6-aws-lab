@@ -29,7 +29,7 @@ data "aws_ami" "ubuntu" {
 }
 
 resource "aws_security_group" "nat64_sg" {
-  description = "Allow SSH inbound traffic"
+  description = "Allow NAT64/management inbound traffic"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
   ingress {
