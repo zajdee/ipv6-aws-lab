@@ -9,7 +9,8 @@ resource "aws_vpc" "default_vpc" {
   assign_generated_ipv6_cidr_block = true
   enable_dns_support               = true
   enable_dns_hostnames             = true
-  tags                             = {
+
+  tags = {
     Name        = "v6LabVPC"
     Environment = "v6Lab"
   }
@@ -18,7 +19,8 @@ resource "aws_vpc" "default_vpc" {
 # Create an Internet gateway for IPv4 and IPv6 public subnets
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.default_vpc.id
-  tags   = {
+
+  tags = {
     Name        = "v6LabInetGW"
     Environment = "v6Lab"
   }
@@ -27,7 +29,8 @@ resource "aws_internet_gateway" "igw" {
 # Create an Egress-only gateway for IPv6 private subnets
 resource "aws_egress_only_internet_gateway" "eigw" {
   vpc_id = aws_vpc.default_vpc.id
-  tags   = {
+
+  tags = {
     Name        = "v6LabEgressOnlyGW"
     Environment = "v6Lab"
   }
@@ -97,12 +100,21 @@ resource "aws_route" "public6_default_route6" {
 resource "aws_subnet" "private_subnet" {
   count = length(var.private_subnet_cidr_blocks)
 
-  vpc_id                          = aws_vpc.default_vpc.id
-  cidr_block                      = var.private_subnet_cidr_blocks[count.index]
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.default_vpc.ipv6_cidr_block, 8, var.private_subnet_cidr6_indexes[count.index])
+  vpc_id            = aws_vpc.default_vpc.id
+  cidr_block        = var.private_subnet_cidr_blocks[count.index]
+  availability_zone = format(
+    "%s%s",
+    var.region,
+    var.availability_zones[count.index])
+
+  ipv6_cidr_block = cidrsubnet(
+    aws_vpc.default_vpc.ipv6_cidr_block,
+    8,
+    var.private_subnet_cidr6_indexes[count.index])
+
   assign_ipv6_address_on_creation = true
-  availability_zone               = format("%s%s", var.region, var.availability_zones[count.index])
-  tags                            = {
+
+  tags = {
     Name        = format("v6LabPrivateDualStackSubnet-%s%s", var.region, var.availability_zones[count.index])
     Environment = "v6Lab"
   }
@@ -112,16 +124,25 @@ resource "aws_subnet" "private_subnet" {
 resource "aws_subnet" "private6only_subnet" {
   count = length(var.private6only_subnet_cidr6_indexes)
 
-  vpc_id                                         = aws_vpc.default_vpc.id
-  ipv6_native                                    = true
-  enable_dns64                                   = true
+  vpc_id            = aws_vpc.default_vpc.id
+  ipv6_native       = true
+  enable_dns64      = true
+  availability_zone = format(
+    "%s%s",
+    var.region,
+    var.availability_zones[count.index])
+
+  ipv6_cidr_block = cidrsubnet(
+    aws_vpc.default_vpc.ipv6_cidr_block,
+    8,
+    var.private6only_subnet_cidr6_indexes[count.index])
+
   enable_resource_name_dns_aaaa_record_on_launch = true
   enable_resource_name_dns_a_record_on_launch    = false
   private_dns_hostname_type_on_launch            = "resource-name"
   assign_ipv6_address_on_creation                = true
-  ipv6_cidr_block                                = cidrsubnet(aws_vpc.default_vpc.ipv6_cidr_block, 8, var.private6only_subnet_cidr6_indexes[count.index])
-  availability_zone                              = format("%s%s", var.region, var.availability_zones[count.index])
-  tags                                           = {
+
+  tags = {
     Name        = format("v6LabPrivateIPv6OnlySubnet-%s%s", var.region, var.availability_zones[count.index])
     Environment = "v6Lab"
   }
@@ -133,11 +154,20 @@ resource "aws_subnet" "public_subnet" {
 
   vpc_id                          = aws_vpc.default_vpc.id
   cidr_block                      = var.public_subnet_cidr_blocks[count.index]
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.default_vpc.ipv6_cidr_block, 8, var.public_subnet_cidr6_indexes[count.index])
   assign_ipv6_address_on_creation = true
-  availability_zone               = format("%s%s", var.region, var.availability_zones[count.index])
   map_public_ip_on_launch         = true
-  tags                            = {
+
+  availability_zone = format(
+    "%s%s",
+    var.region,
+    var.availability_zones[count.index])
+
+  ipv6_cidr_block = cidrsubnet(
+    aws_vpc.default_vpc.ipv6_cidr_block,
+    8,
+    var.public_subnet_cidr6_indexes[count.index])
+
+  tags = {
     Name        = format("v6LabPublicDualStackSubnet-%s%s", var.region, var.availability_zones[count.index])
     Environment = "v6Lab"
   }
@@ -147,17 +177,27 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_subnet" "public6only_subnet" {
   count = length(var.public6only_subnet_cidr6_indexes)
 
-  vpc_id                                         = aws_vpc.default_vpc.id
-  ipv6_native                                    = true
-  enable_dns64                                   = true
+  vpc_id                  = aws_vpc.default_vpc.id
+  ipv6_native             = true
+  enable_dns64            = true
+  map_public_ip_on_launch = false
+
+  availability_zone = format(
+    "%s%s",
+    var.region,
+    var.availability_zones[count.index])
+
+  ipv6_cidr_block = cidrsubnet(
+    aws_vpc.default_vpc.ipv6_cidr_block,
+    8,
+    var.public6only_subnet_cidr6_indexes[count.index])
+
   enable_resource_name_dns_aaaa_record_on_launch = true
   enable_resource_name_dns_a_record_on_launch    = false
   private_dns_hostname_type_on_launch            = "resource-name"
-  ipv6_cidr_block                                = cidrsubnet(aws_vpc.default_vpc.ipv6_cidr_block, 8, var.public6only_subnet_cidr6_indexes[count.index])
   assign_ipv6_address_on_creation                = true
-  availability_zone                              = format("%s%s", var.region, var.availability_zones[count.index])
-  map_public_ip_on_launch                        = false
-  tags                                           = {
+
+  tags = {
     Name        = format("v6LabPublicIPv6OnlySubnet-%s%s", var.region, var.availability_zones[count.index])
     Environment = "v6Lab"
   }

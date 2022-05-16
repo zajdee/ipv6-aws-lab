@@ -16,7 +16,8 @@ data "terraform_remote_state" "vpc" {
 resource "aws_eip" "nat" {
   count = length(data.terraform_remote_state.vpc.outputs.public_subnet_cidr_blocks)
 
-  vpc  = true
+  vpc = true
+
   tags = {
     Name = format(
       "v6LabNATGatewayIP-%s%s",
@@ -34,8 +35,9 @@ resource "aws_nat_gateway" "nat_gateway" {
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = data.terraform_remote_state.vpc.outputs.public_subnets[count.index].id
-  tags          = {
-    Name        = format("v6LabNATGateway-%s%s",
+
+  tags = {
+    Name = format("v6LabNATGateway-%s%s",
       data.terraform_remote_state.vpc.outputs.region,
       data.terraform_remote_state.vpc.outputs.availability_zones[count.index])
     Environment = "v6Lab"
