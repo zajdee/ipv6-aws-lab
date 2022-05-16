@@ -18,19 +18,26 @@ resource "aws_eip" "nat" {
 
   vpc  = true
   tags = {
-    Name        = "v6LabNATGatewayIP"
+    Name = format(
+      "v6LabNATGatewayIP-%s%s",
+      data.terraform_remote_state.vpc.outputs.region,
+      data.terraform_remote_state.vpc.outputs.availability_zones[count.index])
     Environment = "v6Lab"
   }
 }
 
 # Create a ($$$ paid $$$) NAT gateway
+# PLEASE NOTE: This code creates as many NAT gateways as there are public dual-stack
+# subnets and zones, and then associates each gateway with the respective private subnet.
 resource "aws_nat_gateway" "nat_gateway" {
   count = length(data.terraform_remote_state.vpc.outputs.public_subnet_cidr_blocks)
 
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = data.terraform_remote_state.vpc.outputs.public_subnets[count.index].id
   tags          = {
-    Name        = "v6LabNATGateway"
+    Name        = format("v6LabNATGateway-%s%s",
+      data.terraform_remote_state.vpc.outputs.region,
+      data.terraform_remote_state.vpc.outputs.availability_zones[count.index])
     Environment = "v6Lab"
   }
 }
@@ -58,11 +65,9 @@ resource "aws_route" "private_nat64_default_gw" {
 
 resource "aws_route" "public_nat64_default_gw" {
   # If we had more than 1 public IPv6-only subnets...
-  # count = length(data.terraform_remote_state.vpc.outputs.public_subnet_cidr_blocks)
-  # route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables[count.index].id
-  # nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
-  count                       = 1
-  route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables.id
+  count = length(data.terraform_remote_state.vpc.outputs.availability_zones)
+
+  route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables[count.index].id
   destination_ipv6_cidr_block = "64:ff9b::/96"
   nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
 }

@@ -17,43 +17,43 @@ variable "cidr_block" {
 }
 
 variable "public_subnet_cidr_blocks" {
-  default     = ["100.96.0.0/20"]
+  default     = ["100.96.0.0/20", "100.96.64.0/20", "100.96.128.0/20"]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "public_subnet_cidr6_indexes" {
-  default     = [0]
+  default     = [0, 1, 2]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "public6only_subnet_cidr6_indexes" {
-  default     = [1]
+  default     = [16, 17, 18]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "private_subnet_cidr_blocks" {
-  default     = ["100.96.16.0/20"]
+  default     = ["100.96.16.0/20", "100.96.80.0/20", "100.96.144.0/20"]
   type        = list
   description = "List of private subnet CIDR blocks"
 }
 
 variable "private_subnet_cidr6_indexes" {
-  default     = [2]
+  default     = [32, 33, 34]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "private6only_subnet_cidr6_indexes" {
-  default     = [3]
+  default     = [48, 49, 50]
   type        = list
   description = "List of public subnet CIDR blocks"
 }
 
 variable "availability_zones" {
-  default     = ["eu-west-2a"]
+  default     = ["a", "b", "c"]
   type        = list
   description = "List of availability zones"
 }

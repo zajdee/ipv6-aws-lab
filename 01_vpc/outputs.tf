@@ -49,3 +49,11 @@ output "ipv4_cidr_blocks" {
 output "ipv6_cidr_blocks" {
   value = [aws_vpc.default_vpc.ipv6_cidr_block]
 }
+
+output "region" {
+  value = var.region
+}
+
+output "availability_zones" {
+  value = var.availability_zones
+}

@@ -82,6 +82,8 @@ resource "aws_security_group" "nat64_sg" {
 
   }
 }
+
+# We are creating the NAT instance in the first public subnet
 resource "aws_network_interface" "eni_v6LabNAT64Instance" {
   subnet_id         = data.terraform_remote_state.vpc.outputs.public_subnets[0].id
   security_groups   = [aws_security_group.nat64_sg.id]
@@ -98,6 +100,7 @@ resource "aws_network_interface" "eni_v6LabNAT64Instance" {
   }
 }
 
+# Availability zone is picked based on the subnet
 resource "aws_instance" "v6LabNAT64Instance" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
@@ -147,7 +150,7 @@ resource "aws_route" "public_nat64_default_gw" {
   # route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables[count.index].id
   # nat_gateway_id              = aws_nat_gateway.nat_gateway[count.index].id
   count                       = 1
-  route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables.id
+  route_table_id              = data.terraform_remote_state.vpc.outputs.public_route_tables[count.index].id
   destination_ipv6_cidr_block = "64:ff9b::/96"
   network_interface_id        = aws_network_interface.eni_v6LabNAT64Instance.id
 }
