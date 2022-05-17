@@ -313,7 +313,19 @@ resource "aws_instance" "v6LabWebEC2" {
     inline = [
       "sudo apt-get -y update",
       "sudo apt-get -y install nginx",
-      "sudo service nginx start",
+      "sudo systemctl stop nginx",
+    ]
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/nginx_config"
+    destination = "/tmp/nginx-default"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp /tmp/nginx-default /etc/nginx/sites-available/default",
+      "sudo systemctl restart nginx",
     ]
   }
 
