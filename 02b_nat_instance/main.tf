@@ -1,6 +1,6 @@
 provider "aws" {
-  region  = "${var.region}"
-  profile = "${var.aws_profile_name}"
+  region  = var.region
+  profile = var.aws_profile_name
 }
 
 # Import the VPC resources
@@ -120,7 +120,7 @@ resource "aws_instance" "v6LabNAT64Instance" {
     Environment = "v6Lab"
   }
   # user data that get executed on (every) node start
-  user_data = "${file("install_jool.userdata")}"
+  user_data = file("install_jool.userdata")
 }
 
 

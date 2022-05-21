@@ -1,6 +1,6 @@
 provider "aws" {
-  region  = "${var.region}"
-  profile = "${var.aws_profile_name}"
+  region  = var.region
+  profile = var.aws_profile_name
 }
 
 # Import the VPC resources
@@ -298,11 +298,20 @@ resource "aws_instance" "v6LabWebEC2" {
     cpu_credits = "standard"
   }
 
+  # This requires a working SSH agent with your key installed; if your SSH client is unable to forward
+  # the authentication, the connection from the bastion host to the nginx EC2 instance
+  # in the private subnet will not work and the "terraform apply" job will fail.
+  #
+  # We use the NAT instance created in 02b_nat_instance as a bastion host (jump server)
   connection {
     # The default username for our AMI
     user         = "ubuntu"
     host         = self.ipv6_addresses[0]
+    # Only one bastion_host can be specified, therefore pick one based on your environment and comment the other one out
+    # If you have a working IPv6 connectivity from your computer, uncomment this line
     bastion_host = data.terraform_remote_state.nat_instance.outputs.dualstack_ipv6[0]
+    # If you don't have a working IPv6 connectivity, uncomment this line
+    # bastion_host = bastion_host = data.terraform_remote_state.nat_instance.outputs.dualstack_ipv4_public
     bastion_user = "ubuntu"
     # The connection will use the local SSH agent for authentication.
   }
