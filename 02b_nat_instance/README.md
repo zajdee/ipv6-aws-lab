@@ -1,4 +1,4 @@
-# AWS LAB: `02a_nat_gateway`
+# AWS LAB: `02b_nat_instance`
 
 This deployment creates a NAT EC2 instance. It conflicts with `02a_nat_gateway`.
 The NAT instance supports IPv4 to IPv4 NAT (NAT44) as well as IPv6-to-IPv4 NAT (NAT64).

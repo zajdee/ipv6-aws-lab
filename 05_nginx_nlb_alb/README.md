@@ -47,7 +47,7 @@ terraform apply
 Run
 
 ```
-$  terraform output
+$ terraform output
 v6LabWebALB_hostname = "tf-lb-20220522194641738900000006-2062295913.eu-west-2.elb.amazonaws.com"
 v6LabWebEC2_ipv6 = tolist([
   "2001:db8:c0fe:fe20::ebb",

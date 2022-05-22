@@ -5,7 +5,7 @@ The NAT gateway supports IPv4 to IPv4 NAT (NAT44) as well as IPv6-to-IPv4 NAT (N
 
 # Resources built by this lab
 
-- A NAT EC2 instance with [Jool](http://jool.mx/) (NAT64) installed
+- A NAT EC2 instance with Docker installed
   - Also creates an ENI in the first public dual-stack subnet
   - Also creates a security group to let traffic in
   - Due to the AWS API limitations, only a `/80` subnet is assigned, not a single address (see below for details)
@@ -15,7 +15,7 @@ The NAT gateway supports IPv4 to IPv4 NAT (NAT44) as well as IPv6-to-IPv4 NAT (N
 
 A `/80` prefix is delegated to the instance, e.g. `2001:db8:c0fe:fe00:4000::/80`. This prefix is then split as follows:
 
-- `2001:db8:c0fe:fe00:4000::1` (or `2001:db8:c0fe:fe00:4000:0::1`) - the IPv6 address of the instance, configured by the cloud-init script
+- `2001:db8:c0fe:fe00:4000::1/128` (or `2001:db8:c0fe:fe00:4000:0::1/128`) - the IPv6 address of the instance, configured by the cloud-init script
 - `2001:db8:c0fe:fe00:4000:1::/96` a sub-prefix of the `/80`, used as the default docker network
 
 # Test IPv6 and docker

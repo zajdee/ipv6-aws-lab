@@ -11,7 +11,7 @@ This deployment creates several EC2 instances in various subnet combinations (IP
 | Instance name | Subnet type | Has IPv4? | Has IPv6? |
 |---|---|---|---|
 |`v6LabPublicEC2DualStack` | Dual-stack, public | Yes, public and private | Yes, public
-|`v6LabPrivateEC2DualStack` | Dual-stack, private | Yes, public and private | Yes, firewalled
+|`v6LabPrivateEC2DualStack` | Dual-stack, private | Yes, private only | Yes, firewalled
 |`v6LabPublicEC2IPv6Only` | IPv6-only, public | None | Yes, public
 |`v6LabPrivateEC2IPv6Only` | IPv6-only, private | None | Yes, firewalled
 
