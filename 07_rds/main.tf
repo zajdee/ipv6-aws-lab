@@ -102,7 +102,7 @@ resource "aws_db_parameter_group" "v6LabPSQLParamGroup" {
 }
 
 # Now you need to change the subnet type to "DUAL"
-# aws rds modify-db-instance --region your-region \
+# aws rds modify-db-instance --profile aws-ipv6-lab --region your-region \
 #   --db-instance-identifier v6labpsql --network-type DUAL --apply-immediately
 #
 # You can check if AWS changed the argument by running
