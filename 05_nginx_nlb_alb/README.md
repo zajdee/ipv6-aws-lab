@@ -92,3 +92,6 @@ Please note that all other components depend on this one. Destroy this one as th
 terraform destroy
 ```
 
+# Next step
+
+You may continue to deploy the [Dual-stacked S3 bucket](../06_s3/README.md).

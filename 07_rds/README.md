@@ -117,3 +117,6 @@ Please note that all other components depend on this one. Destroy this one as th
 terraform destroy
 ```
 
+# Next step
+
+Now you have created all the resources. You can poke around and investigate the configuration of IPv6 in the VPC and EC2 instances, or for example deploy a dual-stacked Cloudfront distribution. When you are done, return to the [root README](../README.md#destruction) and destroy the resources.

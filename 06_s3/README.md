@@ -57,3 +57,6 @@ Please note that all other components depend on this one. Destroy this one as th
 terraform destroy
 ```
 
+# Next step
+
+You may continue to deploy the [Dual-stacked RDS DB instance](../07_rds/README.md).

@@ -21,8 +21,8 @@ Short VPC IPv6 addressing theory:
 
 | Purpose | Prefix | Can be split into | Starting addr or prefix | Ending address or prefix |
 |---|---|---|---|---|
-| VPC prefix | 2001:db8:c0fe:fe00::/56 | 256 /64 prefixes | 2001:db8:c0fe:fe00::/64 | 2001:db8:c0fe:feff::/56 |
-| Subnet prefix | 2001:db8:c0fe:fe00::/64 | 65534 /80 prefixes | 2001:db8:c0fe:fe00:1::/80 | 2001:db8:c0fe:fe00:1::/80 |
+| VPC prefix | 2001:db8:c0fe:fe00::/56 | 256 /64 prefixes | 2001:db8:c0fe:fe00::/64 | 2001:db8:c0fe:feff::/64 |
+| Subnet prefix | 2001:db8:c0fe:fe00::/64 | 65534 /80 prefixes | 2001:db8:c0fe:fe00:1::/80 | 2001:db8:c0fe:fe00:fffe::/80 |
 
 Let's assume we have `2001:db8:c0fe:fe00::/56` as our VPC prefix. Then the following applies. Note that we often assign specific IPv6 addresses to the EC2 instances, but you can also let AWS assign random addresses for you.
 
@@ -40,8 +40,8 @@ Address plan:
 2001:db8:c0fe:fe00::/56 -- Primary VPC prefix
 |
 +-+- 2001:db8:c0fe:fe00::/64 -- Public dual-stack subnet, AZ1
-| |  +- 2001:db8:c0fe:fe00::c001:1001 -- IPv6 address of the NAT instance
-| |  +- 2001:db8:c0fe:fe00::dead:beef -- IPv6 address of the EC2 public subnet dual-stacked EC2 instance
+| |  +- 2001:db8:c0fe:fe00::c001:1001/128 -- IPv6 address of the NAT instance
+| |  +- 2001:db8:c0fe:fe00::dead:beef/128 -- IPv6 address of the EC2 public subnet dual-stacked EC2 instance
 | |  |
 | |  +- 2001:db8:c0fe:fe00:4000::/80 -- Delegated prefix for the Docker lab
 | |  |  +- 2001:db8:c0fe:fe00:4000:0::1/128 -- IPv6 address of the Docker lab EC2 instance
@@ -57,7 +57,7 @@ Address plan:
 | +- 2001:db8:c0fe:fe0f::/64 -- Reserve for public dual-stack subnet #15
 |
 +-+- 2001:db8:c0fe:fe10::/64 -- Public IPv6-only subnet, AZ1
-| |  +- 2001:db8:c0fe:fe10::face:b00c -- IPv6 address of the EC2 public subnet IPv6-only EC2 instance
+| |  +- 2001:db8:c0fe:fe10::face:b00c/128 -- IPv6 address of the EC2 public subnet IPv6-only EC2 instance
 | +- 2001:db8:c0fe:fe11::/64 -- Public IPv6-only subnet, AZ2
 | +- 2001:db8:c0fe:fe12::/64 -- Public IPv6-only subnet, AZ3
 | +- 2001:db8:c0fe:fe13::/64 -- Reserve for public IPv6-only subnet #4
@@ -65,8 +65,8 @@ Address plan:
 | +- 2001:db8:c0fe:fe1f::/64 -- Reserve for public IPv6-only subnet #15
 |
 +-+- 2001:db8:c0fe:fe20::/64 -- Private dual-stack subnet, AZ1
-| |  +- 2001:db8:c0fe:fe20::ebb -- IPv6 address of the EC2 private subnet dual-stacked webserver instance
-| |  +- 2001:db8:c0fe:fe20::c01d:cafe -- IPv6 address of the EC2 private subnet dual-stacked EC2 instance
+| |  +- 2001:db8:c0fe:fe20::ebb/128 -- IPv6 address of the EC2 private subnet dual-stacked webserver instance
+| |  +- 2001:db8:c0fe:fe20::c01d:cafe/128 -- IPv6 address of the EC2 private subnet dual-stacked EC2 instance
 | +- 2001:db8:c0fe:fe21::/64 -- Private dual-stack subnet, AZ2
 | +- 2001:db8:c0fe:fe22::/64 -- Private dual-stack subnet, AZ3
 | +- 2001:db8:c0fe:fe23::/64 -- Reserve for private dual-stack subnet #4
@@ -74,7 +74,7 @@ Address plan:
 | +- 2001:db8:c0fe:fe2f::/64 -- Reserve for private dual-stack subnet #15
 |
 +-+- 2001:db8:c0fe:fe30::/64 -- Private IPv6-only subnet, AZ1
-| |  +- 2001:db8:c0fe:fe30::bad:cafe -- IPv6 address of the EC2 private subnet IPv6-only EC2 instance
+| |  +- 2001:db8:c0fe:fe30::bad:cafe/128 -- IPv6 address of the EC2 private subnet IPv6-only EC2 instance
 | +- 2001:db8:c0fe:fe31::/64 -- Private IPv6-only subnet, AZ2
 | +- 2001:db8:c0fe:fe32::/64 -- Private IPv6-only subnet, AZ3
 | +- 2001:db8:c0fe:fe33::/64 -- Reserve for private IPv6-only subnet #4
@@ -167,3 +167,7 @@ Please note that all other components depend on this one. Destroy this one as th
 ```
 terraform destroy
 ```
+
+# Next step
+
+You may continue to deploy the [NAT instance](../02b_nat_instance/README.md).

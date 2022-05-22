@@ -56,3 +56,7 @@ Please note that all other components depend on this one. Destroy this one as th
 ```
 terraform destroy
 ```
+
+# Next step
+
+You may continue to deploy the [EC2 instances](../03_ec2/README.md).

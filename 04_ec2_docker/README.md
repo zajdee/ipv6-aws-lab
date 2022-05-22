@@ -135,3 +135,7 @@ Please note that all other components depend on this one. Destroy this one as th
 ```
 terraform destroy
 ```
+
+# Next step
+
+You may continue to deploy the [NginX with NLB and ALB](../05_nginx_nlb_alb/README.md).

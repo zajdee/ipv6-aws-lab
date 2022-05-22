@@ -38,7 +38,7 @@ IMPORTANT NOTE: If you are testing on Windows, you might be on your own. WSL on 
    3. There's a [comprehensive access key management guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey) in the AWS docs.
 
 Now that you have your access keys ready, add them to the `~/.aws/credentials` file, like this (include your region of choice):
-```aidl
+```
 [aws-ipv6-lab]
 aws_access_key_id=DEADBEEF
 aws_secret_access_key=WVNvQ3VyaW91cz8K
@@ -92,5 +92,11 @@ Please remember that most of the resources created in this lab are paid ones. Re
 - `02b_nat_instance`
 - `02a_nat_gateway`
 - `01_vpc`
+
+A convenient one-liner might be:
+
+```
+for lab in 07_rds 06_s3 05_nginx_nlb_alb 04_ec2_docker 03_ec2 02b_nat_instance 01_vpc; do cd $lab; terraform destroy; cd ..; done
+```
 
 **We are not responsible for extra costs incurred by you not destroying your lab resources.**
