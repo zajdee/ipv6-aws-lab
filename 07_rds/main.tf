@@ -100,26 +100,3 @@ resource "aws_db_parameter_group" "v6LabPSQLParamGroup" {
     Environment = "v6Lab"
   }
 }
-
-# Now you need to change the subnet type to "DUAL"
-# aws rds modify-db-instance --profile aws-ipv6-lab --region your-region \
-#   --db-instance-identifier v6labpsql --network-type DUAL --apply-immediately
-#
-# You can check if AWS changed the argument by running
-# aws rds --region your-region describe-db-instances
-#
-# Wait for the change to complete
-#
-# Get the new instance hostname
-# terraform output rds_hostname
-#
-# Then log in to the NAT instance as user `ubuntu`. Get its address using
-# terraform output
-#
-# On the NAT instance, install postgresql-client
-# sudo apt-get install postgresql-client
-#
-# Then log in to postgres using
-# psql -6 -h <rds_hostname> -p 5432 -U v6lab  postgres
-
-# More details are in the guide on https://learn.hashicorp.com/tutorials/terraform/aws-rds?in=terraform/aws

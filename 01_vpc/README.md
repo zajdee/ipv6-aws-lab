@@ -141,6 +141,25 @@ terraform plan
 terraform apply
 ```
 
+# View Terraform output
+
+Run
+
+```
+terraform output
+```
+
+E.g. for the VPC prefix, you can check
+
+```
+$ terraform output ipv6_cidr_blocks
+[
+  "2001:db8:c0fe:fe00::/56",
+]
+```
+
+You can also go to the [VPC console](https://console.aws.amazon.com/vpc/home) (don't forget to select correct region).
+
 # How to destroy
 
 Please note that all other components depend on this one. Destroy this one as the very last one.

@@ -2,6 +2,9 @@
 
 This is a simple lab to set-up an IPv6-enabled environment in AWS. It is in no way production grade code, however it does ease the initial set-up of a lab so that you don't have to click around.
 
+## QR code link to this repository
+![Link to this repository](qrlink.png "Link to this repository")
+
 ## Prerequisities
 
 You need the following tools to try this lab:
@@ -62,12 +65,13 @@ The IPv6 addresses look like `2001:db8:dead:beef:bad:cafe:bad:babe`.
 The lab is split into several tasks.
 
 - [01_vpc](01_vpc/README.md): Create a VPC with IPv6+IPv4 (dual-stack) and IPv6-only subnets
-- [02a_nat_gateway](02a_nat_gateway/README.md): Create a NAT gateway [$$$] OR a NAT instance
-- [02b_nat_instance](02b_nat_instance/README.md): Create a few EC2 instances in public and private subnets, dual-stacked and IPv6-only ones
-- [03_ec2](03_ec2/README.md): Create an EC2 instance with Docker and test some IPv6-enabled containers
-- [04_ec2_docker](04_ec2_docker/README.md): Create an EC2 instance with IPv6-only NginX and dual-stacked ALB and NLB to see how can you run IPv6-only service behind dual-stacked balancers
-- [05_nginx_alb](05_nginx_alb/README.md): Create a S3 bucket and test accessing it using IPv6
-- [06_s3](06_s3/README.md): Create a dual-stacked RDS database instance
+- [02a_nat_gateway](02a_nat_gateway/README.md): Create a NAT gateway [$$$]
+- [02b_nat_instance](02b_nat_instance/README.md): Create a NAT EC2 instance (cheaper, we will also use it as a jump host)
+- [03_ec2](03_ec2/README.md): Create a few EC2 instances in public and private subnets, dual-stacked and IPv6-only ones
+- [04_ec2_docker](04_ec2_docker/README.md): Create an EC2 instance with Docker and test some IPv6-enabled containers
+- [05_nginx_alb](05_nginx_alb/README.md): Create an EC2 instance with IPv6-only NginX and dual-stacked ALB and NLB to see how can you run IPv6-only service behind dual-stacked balancers
+- [06_s3](06_s3/README.md): Create a S3 bucket and test accessing it using IPv6
+- [07_rds](07_rds/README.md): Create a dual-stacked RDS database instance
 
 When all the above is created, you can poke around the console and EC2 instances to see how IPv6 works.
 
