@@ -311,7 +311,7 @@ resource "aws_instance" "v6LabWebEC2" {
     # If you have a working IPv6 connectivity from your computer, uncomment this line
     bastion_host = data.terraform_remote_state.nat_instance.outputs.dualstack_ipv6[0]
     # If you don't have a working IPv6 connectivity, uncomment this line
-    # bastion_host = bastion_host = data.terraform_remote_state.nat_instance.outputs.dualstack_ipv4_public
+    # bastion_host = data.terraform_remote_state.nat_instance.outputs.dualstack_ipv4_public
     bastion_user = "ubuntu"
     # The connection will use the local SSH agent for authentication.
   }

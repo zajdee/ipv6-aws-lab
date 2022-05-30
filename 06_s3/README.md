@@ -1,7 +1,6 @@
 # AWS LAB: `06_s3`
+This deployment creates a dual-stacked S3 bucket.
 
-This deployment creates managed NAT gateway(s). It conflicts with `02b_nat_instance`, so it's here more like an example of how to do so.
-The NAT gateway supports IPv4 to IPv4 NAT (NAT44) as well as IPv6-to-IPv4 NAT (NAT64).
 
 # Resources built by this lab
 
