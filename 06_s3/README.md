@@ -1,4 +1,6 @@
 # AWS LAB: `06_s3`
+This deployment creates a dual-stacked S3 bucket.
+
 
 # Resources built by this lab
 
